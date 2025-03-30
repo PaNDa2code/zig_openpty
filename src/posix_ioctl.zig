@@ -56,8 +56,9 @@ pub const TCSAFLUSH = 0x2;
 pub const TIOCGPTN = _IOR('T', 0x30, u32);
 pub const TIOCSPTLCK = _IOW('T', 0x31, i32);
 pub const TIOCGPTPEER = _IO('T', 0x41);
-pub const TIOCSWINSZ = _IOW('t', 103, std.posix.winsize);
-pub const TIOCSCTTY = _IO('T', 14);
+pub const TIOCSWINSZ = _IOW('t', 0x67, std.posix.winsize);
+pub const TIOCSCTTY = _IO('T', 0x0E);
+pub const TIOCPTYGRANT = _IO('t', 0x54);
 
 pub const IoCtlError = error{
     InvalidFileDescriptor,
