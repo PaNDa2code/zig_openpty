@@ -26,6 +26,7 @@ pub fn build(b: *std.Build) void {
         .root_source_file = b.path("src/root.zig"),
         .target = target,
         .optimize = optimize,
+        .link_libc = false,
     });
 
     // We will also create a module for our other entry point, 'main.zig'.
@@ -37,6 +38,7 @@ pub fn build(b: *std.Build) void {
         .root_source_file = b.path("src/main.zig"),
         .target = target,
         .optimize = optimize,
+        .link_libc = false,
     });
 
     // Modules can depend on one another using the `std.Build.Module.addImport` function.

@@ -11,7 +11,7 @@ const TCSAFLUSH = 0x2;
 const TIOCSWINSZ = 0x5414;
 const TIOCSCTTY = 0x540E;
 
-fn fdFromUsize(word: usize) linux.fd_t {
+fn fdFromUsize(word: usize) posix.fd_t {
     return @truncate(@as(isize, @bitCast(word)));
 }
 
@@ -29,8 +29,8 @@ pub const OpenPtyError = error{
 } || posix.OpenError || IoCtlError;
 
 pub fn openpty(
-    master: *linux.fd_t,
-    slave: *linux.fd_t,
+    master: *posix.fd_t,
+    slave: *posix.fd_t,
     termios: ?*posix.termios,
     winsize: ?*posix.winsize,
 ) OpenPtyError!void {
@@ -47,7 +47,7 @@ pub fn openpty(
     }
 
     if (termios) |term|
-        _ = linux.tcsetattr(slave_fd, .FLUSH, term);
+        _ = posix.tcsetattr(slave_fd, .FLUSH, term.*) catch unreachable;
 
     if (winsize) |size|
         _ = linux.ioctl(slave_fd, TIOCSWINSZ, @intFromPtr(size));
@@ -59,12 +59,12 @@ pub fn openpty(
 const ForkPtyError = posix.ForkError || OpenPtyError;
 
 pub fn forkpty(
-    master: *linux.fd_t,
+    master: *posix.fd_t,
     termios: ?*posix.termios,
     winsize: ?*posix.winsize,
 ) ForkPtyError!posix.fd_t {
-    var master_fd: linux.fd_t = 0;
-    var slave_fd: linux.fd_t = 0;
+    var master_fd: posix.fd_t = 0;
+    var slave_fd: posix.fd_t = 0;
 
     try openpty(&master_fd, &slave_fd, termios, winsize);
 
@@ -87,7 +87,7 @@ pub fn forkpty(
     return pid;
 }
 
-pub fn login_tty(fd: linux.fd_t) !void {
+pub fn login_tty(fd: posix.fd_t) !void {
     _ = linux.setsid();
     const rc = linux.ioctl(fd, TIOCSCTTY, 0);
 
