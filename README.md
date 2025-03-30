@@ -7,24 +7,10 @@ the library is incomplete and hardcoded, don't use it in production.
 
 ## current state
 
-<table>
-  <thead>
-    <tr>
-      <th>Platform</th>
-      <th>Status</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Linux</td>
-      <td>✅ Supported</td>
-    </tr>
-    <tr>
-      <td>macOS</td>
-      <td>🚧 Under Development</td>
-    </tr>
-  </tbody>
-</table>
+| Platform | Status | 
+| --- | --- |
+| Linux | ✅ Supported | 
+| macOS | 🚧 Under Development | 
 
 
 ```zig
