@@ -12,12 +12,7 @@ test "Opening PTY" {
     var master_fd: linux.fd_t = undefined;
     var slave_fd: linux.fd_t = undefined;
 
-    const open_result = try openpty(&master_fd, &slave_fd, null, null, null);
-
-    if (open_result != 0) {
-        std.debug.print("openpty failed with error code: {}\n", .{open_result});
-        return;
-    }
+    try openpty(&master_fd, &slave_fd, null, null);
 
     defer posix.close(master_fd);
     defer posix.close(slave_fd);
