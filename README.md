@@ -5,6 +5,27 @@ simple zig library implementing openpty with no need for linking to libc
 
 the library is incomplete and hardcoded, don't use it in production.
 
+## current state
+
+<table>
+  <thead>
+    <tr>
+      <th>Platform</th>
+      <th>Status</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Linux</td>
+      <td>✅ Supported</td>
+    </tr>
+    <tr>
+      <td>macOS</td>
+      <td>🚧 Under Development</td>
+    </tr>
+  </tbody>
+</table>
+
 
 ```zig
 const std = @import("std");
