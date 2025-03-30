@@ -11,13 +11,12 @@ const std = @import("std");
 const posix = std.posix;
 const linux = std.os.linux;
 
-/// This imports the separate module containing `root.zig`. Take a look in `build.zig` for details.
-const lib = @import("zig_openpty_lib");
+const zig_openpty = @import("zig_openpty");
 
 pub fn main() !void {
     var master_fd: linux.fd_t = undefined;
 
-    const pid = lib.forkpty(&master_fd, null, null) catch |err| {
+    const pid = openpty.forkpty(&master_fd, null, null) catch |err| {
         std.debug.print("forkpty failed: {}\n", .{err});
         return;
     };
