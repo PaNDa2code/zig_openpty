@@ -37,13 +37,10 @@ test "Running forkpty" {
 
     if (pid == 0) {
         // Child Process - Write to the slave (should be redirected to master)
-
         _ = try posix.write(1, msg); // Write to stdout
-        posix.exit(0);
+        while (true) {}
     } else {
         // Parent Process - Read from the master side of the PTY
-
-        // std.debug.print("Successfully forked child with PID: {}\n", .{pid});
         var buffer: [1024]u8 = undefined;
         const read_bytes = posix.read(master_fd, &buffer) catch |err| {
             std.debug.print("Read error: {}\n", .{err});
@@ -51,6 +48,5 @@ test "Running forkpty" {
         };
 
         try std.testing.expectEqualSlices(u8, msg, buffer[0..read_bytes]);
-        // std.debug.print("Received from child:\n{s}\n", .{buffer[0..read_bytes]});
     }
 }
