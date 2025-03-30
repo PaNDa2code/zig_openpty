@@ -19,18 +19,11 @@ jobs:
     - name: Checkout repository
       uses: actions/checkout@v3
 
-
-    - name: Install Zig
-      run: |
-        curl -L https://ziglang.org/download/index.json -o zig_index.json
-        ZIG_URL=$(jp "\"0.14.0\".\"x86_64-$(echo ${{ matrix.os }} | sed 's/-latest//' | sed 's/ubuntu/linux/')\".tarball" < zig_index.json)
-        wget $ZIG_URL -O zig.tar.xz
-        tar -xf zig.tar.xz
-        mv zig-*/zig /usr/local/bin/
-        zig version
+    - name: Setup Zig Compiler
+      uses: mlugg/setup-zig@v1.2.1
 
     - name: Build
       run: zig build
 
     - name: Test
-      run: zig test src/main.zig
+      run: zig build test
