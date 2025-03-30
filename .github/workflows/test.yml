@@ -1,0 +1,39 @@
+name: CI
+
+on:
+  push:
+    branches: [ master ]
+  pull_request:
+    branches: [ master ]
+
+jobs:
+  build:
+    runs-on: ${{ matrix.os }}
+
+    strategy:
+      matrix:
+        os: [ubuntu-latest, macos-latest]
+        zig-version: [0.14.0]
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v3
+
+
+    - name: Install Zig
+      run: |
+        curl -L https://ziglang.org/download/index.json -o zig_index.json
+        OS_CLEANED=$(echo "${{ matrix.os }}" | sed 's/-latest//')
+        
+        ZIG_URL=$(jq -r ".\"${{ matrix.zig-version }}\".\"x86_64-${OS_CLEANED}\".tarball" < zig_index.json)
+        
+        wget $ZIG_URL -O zig.tar.xz
+        tar -xf zig.tar.xz
+        mv zig-*/zig /usr/local/bin/
+        zig version
+
+    - name: Build
+      run: zig build
+
+    - name: Test
+      run: zig test src/main.zig

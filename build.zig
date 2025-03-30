@@ -1,7 +1,18 @@
 const std = @import("std");
 
 pub fn build(b: *std.Build) void {
+    const stderr = std.io.getStdErr();
+
     const target = b.standardTargetOptions(.{});
+
+    const target_result = target.result;
+
+    switch (target_result.os.tag) {
+        .linux, .macos => {},
+        else => {
+            _ = stderr.write("[!] Unsupported target, only linux or macos\n") catch unreachable;
+        },
+    }
 
     const optimize = b.standardOptimizeOption(.{});
 
