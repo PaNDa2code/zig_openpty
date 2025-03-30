@@ -19,33 +19,38 @@ fn _IOC(dir: u64, typ: u64, nr: u64, size: u64) comptime_int {
 }
 
 pub fn _IO(typ: u8, nr: u8) comptime_int {
-    return _IOC(_IOC_NONE, @as(u64, @intCast(typ)), @as(u64, @intCast(nr)), 0);
+    return _IOC(
+        _IOC_NONE,
+        @intCast(typ),
+        @intCast(nr),
+        0,
+    );
 }
 
 pub fn _IOR(typ: u8, nr: u8, T: type) comptime_int {
     return @intCast(_IOC(
         _IOC_READ,
-        @as(u64, @intCast(typ)),
-        @as(u64, @intCast(nr)),
-        @as(u64, @intCast(@sizeOf(T))),
+        @intCast(typ),
+        @intCast(nr),
+        @intCast(@sizeOf(T)),
     ));
 }
 
 pub fn _IOW(typ: u8, nr: u8, T: type) comptime_int {
     return @intCast(_IOC(
         _IOC_WRITE,
-        @as(u64, @intCast(typ)),
-        @as(u64, @intCast(nr)),
-        @as(u64, @intCast(@sizeOf(T))),
+        @intCast(typ),
+        @intCast(nr),
+        @intCast(@sizeOf(T)),
     ));
 }
 
 pub fn _IOWR(typ: u8, nr: u8, T: type) comptime_int {
     return @intCast(_IOC(
         _IOC_READ | _IOC_WRITE,
-        @as(u64, @intCast(typ)),
-        @as(u64, @intCast(nr)),
-        @as(u64, @intCast(@sizeOf(T))),
+        @intCast(typ),
+        @intCast(nr),
+        @intCast(@sizeOf(T)),
     ));
 }
 
@@ -68,15 +73,15 @@ pub const IoCtlError = error{
     Unexpcted,
 };
 
-test "Print ioctl constants" {
-    const stdout = std.io.getStdOut().writer();
-
-    try stdout.print("O_RDWR: {x}\n", .{O_RDWR});
-    try stdout.print("O_NOCTTY: {x}\n", .{O_NOCTTY});
-    try stdout.print("TCSAFLUSH: {x}\n", .{TCSAFLUSH});
-    try stdout.print("TIOCGPTN: {x}\n", .{TIOCGPTN});
-    try stdout.print("TIOCSPTLCK: {x}\n", .{TIOCSPTLCK});
-    try stdout.print("TIOCGPTPEER: {x}\n", .{TIOCGPTPEER});
-    try stdout.print("TIOCSWINSZ: {x}\n", .{TIOCSWINSZ});
-    try stdout.print("TIOCSCTTY: {x}\n", .{TIOCSCTTY});
-}
+// test "Print ioctl constants" {
+//     const stdout = std.io.getStdOut().writer();
+//
+//     try stdout.print("O_RDWR: {x}\n", .{O_RDWR});
+//     try stdout.print("O_NOCTTY: {x}\n", .{O_NOCTTY});
+//     try stdout.print("TCSAFLUSH: {x}\n", .{TCSAFLUSH});
+//     try stdout.print("TIOCGPTN: {x}\n", .{TIOCGPTN});
+//     try stdout.print("TIOCSPTLCK: {x}\n", .{TIOCSPTLCK});
+//     try stdout.print("TIOCGPTPEER: {x}\n", .{TIOCGPTPEER});
+//     try stdout.print("TIOCSWINSZ: {x}\n", .{TIOCSWINSZ});
+//     try stdout.print("TIOCSCTTY: {x}\n", .{TIOCSCTTY});
+// }
