@@ -25,7 +25,7 @@ const IoCtlError = error{
 
 pub const OpenPtyError = error{
     OpeningMasterFailed,
-    SlaveOpenFailed,
+    OpeningSlaveFailed,
 } || posix.OpenError || IoCtlError;
 
 pub fn openpty(
@@ -43,7 +43,7 @@ pub fn openpty(
     const slave_fd = fdFromUsize(linux.ioctl(master_fd, TIOCGPTPEER, O_RDWR | O_NOCTTY));
 
     if (slave_fd == -1) {
-        return OpenPtyError.AllocatingSlaveFailed;
+        return OpenPtyError.OpeningSlaveFailed;
     }
 
     if (termios) |term|
