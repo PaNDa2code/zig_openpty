@@ -11,6 +11,7 @@ the library is incomplete and hardcoded, don't use it in production.
 | --- | --- |
 | Linux | ✅ Supported | 
 | macOS | 🚧 Under Development | 
+| windows | ❌ Not planned |
 
 
 ```zig
