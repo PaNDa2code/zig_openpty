@@ -1,4 +1,4 @@
-name: CI
+name: Running unit tests
 
 on:
   push:
