@@ -3,17 +3,17 @@ const builtin = @import("builtin");
 const posix = std.posix;
 const linux = std.os.linux;
 
-const pi = @import("posix_ioctl.zig");
+const pictl = @import("posix_ioctl.zig");
 
-const IoCtlError = pi.IoCtlError;
+const IoCtlError = pictl.IoCtlError;
 
 pub fn grantpt(fd: posix.fd_t) IoCtlError!void {
     var ptyno: u32 = 0;
 
     const arg = switch (builtin.os.tag) {
-        .linux => pi.TIOCGPTN,
-        .macos => pi.TIOCPTYGRANT,
-        else => @compileError("unsupported os"),
+        .linux => pictl.TIOCGPTN,
+        .macos => pictl.TIOCPTYGRANT,
+        else => @compileError("Unsupported os"),
     };
 
     const rc = linux.ioctl(fd, arg, @intFromPtr(&ptyno));

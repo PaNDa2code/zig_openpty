@@ -8,11 +8,6 @@ const pi = @import("posix_ioctl.zig");
 const grantpt = @import("grentpt.zig").grantpt;
 const getpt = @import("getpt.zig").getpt;
 const unlockpt = @import("unlockpt.zig").unlockpt;
-const login_tty = @import("login_tty.zig").login_tty;
-
-fn fdFromUsize(word: usize) posix.fd_t {
-    return @truncate(@as(isize, @bitCast(word)));
-}
 
 const IoCtlError = pi.IoCtlError;
 
@@ -33,7 +28,11 @@ pub fn openpty(
     try grantpt(master_fd);
     try unlockpt(master_fd);
 
-    const slave_fd = fdFromUsize(linux.ioctl(master_fd, pi.TIOCGPTPEER, pi.O_RDWR | pi.O_NOCTTY));
+    const slave_fd: posix.fd_t = @truncate(
+        @as(isize, @bitCast(
+            linux.ioctl(master_fd, pi.TIOCGPTPEER, pi.O_RDWR | pi.O_NOCTTY),
+        )),
+    );
 
     if (slave_fd == -1) {
         return OpenPtyError.OpeningSlaveFailed;

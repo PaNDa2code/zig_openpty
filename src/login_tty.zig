@@ -2,13 +2,13 @@ const std = @import("std");
 const posix = std.posix;
 const linux = std.os.linux;
 
-const pi = @import("posix_ioctl.zig");
+const pictl = @import("posix_ioctl.zig");
 
-const IoCtlError = pi.IoCtlError;
+const IoCtlError = pictl.IoCtlError;
 
 pub fn login_tty(fd: posix.fd_t) !void {
     _ = linux.setsid();
-    const rc = linux.ioctl(fd, pi.TIOCSCTTY, 0);
+    const rc = linux.ioctl(fd, pictl.TIOCSCTTY, 0);
 
     switch (posix.errno(rc)) {
         .SUCCESS => {},

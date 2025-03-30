@@ -1,7 +1,7 @@
 const std = @import("std");
 const posix = std.posix;
 const linux = std.os.linux;
-const pi = @import("posix_ioctl.zig");
+const pictl = @import("posix_ioctl.zig");
 
 const login_tty = @import("login_tty.zig").login_tty;
 
