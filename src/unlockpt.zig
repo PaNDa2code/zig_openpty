@@ -11,7 +11,7 @@ pub fn unlockpt(fd: posix.fd_t) IoCtlError!void {
     var unlock: u32 = 0;
     const arg = switch (builtin.os.tag) {
         .linux => pictl.TIOCSPTLCK,
-        .macos => posix.TIOCPTYUNLK,
+        .macos => pictl.TIOCPTYUNLK,
         else => @compileError("Unsupported os"),
     };
 

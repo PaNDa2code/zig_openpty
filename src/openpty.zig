@@ -41,7 +41,7 @@ pub fn openpty(
                 linux.ioctl(master_fd, pi.TIOCGPTPEER, pi.O_RDWR | pi.O_NOCTTY),
             )),
         ),
-        .macos => try posix.open(name_slice, pi.O_RDWR | pi.O_NOCTTY, 0),
+        .macos => try posix.open(name_slice, @bitCast(@as(u32, pi.O_RDWR | pi.O_NOCTTY)), 0),
         else => {},
     };
 

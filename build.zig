@@ -27,6 +27,7 @@ pub fn build(b: *std.Build) void {
         .linkage = .static,
         .name = "zig_openpty",
         .root_module = lib_mod,
+        .version = std.SemanticVersion.parse("0.1.0") catch null,
     });
 
     b.installArtifact(lib);
