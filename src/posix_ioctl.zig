@@ -10,11 +10,16 @@ const _IOC_TYPESHIFT = _IOC_NRSHIFT + _IOC_NRBITS;
 const _IOC_SIZESHIFT = _IOC_TYPESHIFT + _IOC_TYPEBITS;
 const _IOC_DIRSHIFT = _IOC_SIZESHIFT + _IOC_SIZEBITS;
 
+const _IOC_IN = 0x80000000;
+const _IOC_OUT = 0x40000000;
+const _IOC_INOUT = (_IOC_OUT | _IOC_IN);
+
 const _IOC_NONE = 0;
 const _IOC_WRITE = 1;
 const _IOC_READ = 2;
 
-fn _IOC(dir: u64, typ: u64, nr: u64, size: u64) comptime_int {
+fn _IOC(dir: u32, typ: u32, nr: u32, size: u32) comptime_int {
+    // fn _IOC(dir: u64, typ: u64, nr: u64, size: u64) comptime_int {
     return (dir << _IOC_DIRSHIFT) | (typ << _IOC_TYPESHIFT) | (nr << _IOC_NRSHIFT) | (size << _IOC_SIZESHIFT);
 }
 
@@ -64,6 +69,8 @@ pub const TIOCGPTPEER = _IO('T', 0x41);
 pub const TIOCSWINSZ = _IOW('t', 0x67, std.posix.winsize);
 pub const TIOCSCTTY = _IO('T', 0x0E);
 pub const TIOCPTYGRANT = _IO('t', 0x54);
+pub const TIOCPTYUNLK = _IO('t', 0x52);
+pub const TIOCPTYGNAME = _IOC(_IOC_OUT, 't', 0x53, 128);
 
 pub const IoCtlError = error{
     InvalidFileDescriptor,
@@ -84,4 +91,7 @@ pub const IoCtlError = error{
 //     try stdout.print("TIOCGPTPEER: {x}\n", .{TIOCGPTPEER});
 //     try stdout.print("TIOCSWINSZ: {x}\n", .{TIOCSWINSZ});
 //     try stdout.print("TIOCSCTTY: {x}\n", .{TIOCSCTTY});
+//     try stdout.print("TIOCPTYGRANT: {x}\n", .{TIOCPTYGRANT});
+//     try stdout.print("TIOCPTYUNLK: {x}\n", .{TIOCPTYUNLK});
+//     try stdout.print("TIOCPTYGNAME: {x}\n", .{TIOCPTYGNAME});
 // }

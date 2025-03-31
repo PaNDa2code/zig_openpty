@@ -9,7 +9,14 @@ const IoCtlError = pictl.IoCtlError;
 
 pub fn unlockpt(fd: posix.fd_t) IoCtlError!void {
     var unlock: u32 = 0;
-    const rc = linux.ioctl(fd, pictl.TIOCSPTLCK, @intFromPtr(&unlock));
+    const arg = switch (builtin.os.tag) {
+        .linux => pictl.TIOCSPTLCK,
+        .macos => posix.TIOCPTYUNLK,
+        else => @compileError("Unsupported os"),
+    };
+
+    const rc = linux.ioctl(fd, arg, @intFromPtr(&unlock));
+
     switch (posix.errno(rc)) {
         .SUCCESS => {},
         .BADF => return IoCtlError.InvalidFileDescriptor,
