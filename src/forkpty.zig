@@ -12,14 +12,15 @@ pub const ForkPtyError = posix.ForkError || OpenPtyError;
 
 pub fn forkpty(
     master: *posix.fd_t,
-    name: []u8,
+    name_buffer: ?[]u8,
+    name_len: ?*usize,
     termios: ?*posix.termios,
     winsize: ?*posix.winsize,
 ) ForkPtyError!posix.fd_t {
     var master_fd: posix.fd_t = 0;
     var slave_fd: posix.fd_t = 0;
 
-    try openpty(&master_fd, &slave_fd, name, termios, winsize);
+    try openpty(&master_fd, &slave_fd, name_buffer, name_len, termios, winsize);
 
     errdefer {
         posix.close(master_fd);

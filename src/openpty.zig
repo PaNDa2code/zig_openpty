@@ -17,12 +17,13 @@ const IoCtlError = pi.IoCtlError;
 pub const OpenPtyError = error{
     OpeningMasterFailed,
     OpeningSlaveFailed,
-} || posix.OpenError || IoCtlError;
+} || std.fmt.BufPrintError || posix.OpenError || IoCtlError;
 
 pub fn openpty(
     master: *posix.fd_t,
     slave: *posix.fd_t,
-    name: ?[]u8,
+    name_buffer: ?[]u8,
+    name_len: ?*usize,
     termios: ?*posix.termios,
     winsize: ?*posix.winsize,
 ) OpenPtyError!void {
@@ -31,8 +32,8 @@ pub fn openpty(
 
     try grantpt(master_fd);
     try unlockpt(master_fd);
-    var name_buffer: [265]u8 = undefined;
-    const name_slice = try ptsname(master_fd, &name_buffer);
+    var buffer: [ptsname_max_size]u8 = undefined;
+    const name_slice = try ptsname(master_fd, &buffer);
 
     const slave_fd: posix.fd_t = switch (builtin.os.tag) {
         .linux => @truncate(
@@ -40,7 +41,7 @@ pub fn openpty(
                 linux.ioctl(master_fd, pi.TIOCGPTPEER, pi.O_RDWR | pi.O_NOCTTY),
             )),
         ),
-        .macos => try posix.open(name, pi.O_RDWR | pi.O_NOCTTY, 0),
+        .macos => try posix.open(name_slice, pi.O_RDWR | pi.O_NOCTTY, 0),
         else => {},
     };
 
@@ -56,8 +57,13 @@ pub fn openpty(
 
     master.* = master_fd;
     slave.* = slave_fd;
-    if (name) |buf| {
-        @memcpy(buf[0..name_slice.len], name_slice[0..]);
-        buf[name_slice.len] = 0;
+
+    if (name_buffer) |nm_buf| {
+        std.mem.copyForwards(u8, @constCast(nm_buf), name_slice);
+        @memcpy(nm_buf[0..name_slice.len], name_slice[0..]);
+        nm_buf[name_slice.len] = 0;
+    }
+    if (name_len) |nm_len| {
+        nm_len.* = name_slice.len;
     }
 }

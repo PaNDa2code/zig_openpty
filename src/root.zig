@@ -4,6 +4,8 @@ pub const OpenPtyError = @import("openpty.zig").OpenPtyError;
 pub const forkpty = @import("forkpty.zig").forkpty;
 pub const ForkPtyError = @import("forkpty.zig").ForkPtyError;
 
+pub const ptyname_max_len = @import("ptsname.zig").ptsname_max_size;
+
 test "Opening PTY" {
     const std = @import("std");
     const posix = std.posix;
@@ -11,18 +13,20 @@ test "Opening PTY" {
 
     var master_fd: linux.fd_t = undefined;
     var slave_fd: linux.fd_t = undefined;
-    var name: [1024]u8 = undefined;
+    var name: [ptyname_max_len]u8 = undefined;
+    var name_len: usize = undefined;
 
-    try openpty(&master_fd, &slave_fd, name[0..], null, null);
+    try openpty(&master_fd, &slave_fd, &name, &name_len, null, null);
 
-    const len = std.mem.indexOfScalar(u8, &name, 0).?;
+    std.debug.print("pty name: {s}", .{name[0..name_len]});
 
     defer posix.close(master_fd);
     defer posix.close(slave_fd);
 
-    std.debug.print("ptyname: {s}\n", .{name[0..len]});
-    // try std.testing.expect(master_fd >= 0);
-    // try std.testing.expect(slave_fd >= 0);
+    try std.testing.expect(name_len > 0);
+    try std.testing.expectStringStartsWith(&name, "/dev/pts/");
+    try std.testing.expect(master_fd >= 0);
+    try std.testing.expect(slave_fd >= 0);
 }
 
 test "Running forkpty" {
@@ -30,10 +34,11 @@ test "Running forkpty" {
     const posix = std.posix;
     const linux = std.os.linux;
 
-    var name: [1024]u8 = undefined;
+    var name: [ptyname_max_len]u8 = undefined;
+    var name_len: usize = undefined;
     var master_fd: linux.fd_t = undefined;
 
-    const pid = forkpty(&master_fd, &name, null, null) catch |err| {
+    const pid = forkpty(&master_fd, &name, &name_len, null, null) catch |err| {
         std.debug.print("forkpty failed: {}\n", .{err});
         return;
     };

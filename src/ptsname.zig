@@ -10,7 +10,6 @@ const IoCtlError = pictl.IoCtlError;
 pub const ptsname_max_size = 128;
 
 pub fn ptsname(fd: posix.fd_t, buffer: []u8) ![]const u8 {
-    var buf: [1024]u8 = undefined;
     var ptyno: u32 = 0;
     var name: []const u8 = undefined;
 
@@ -25,12 +24,12 @@ pub fn ptsname(fd: posix.fd_t, buffer: []u8) ![]const u8 {
                 .NOTTY => IoCtlError.NotTTY,
                 else => IoCtlError.Unexpcted,
             };
-            name = std.fmt.bufPrintZ(&buf, "/dev/pts/{}", .{ptyno}) catch unreachable;
+            name = try std.fmt.bufPrint(buffer, "/dev/pts/{}", .{ptyno});
         },
         .macos => {
-            const rc = linux.ioctl(fd, pictl.TIOCPTYGNAME, @intFromPtr(&buf));
-            const len = std.mem.indexOfScalarPos(u8, buf, 0, 0).?;
-            name = buf[0..len];
+            const rc = linux.ioctl(fd, pictl.TIOCPTYGNAME, @intFromPtr(&buffer));
+            const len = std.mem.indexOfScalarPos(u8, buffer, 0, 0).?;
+            name = buffer[0..len];
             try switch (posix.errno(rc)) {
                 .SUCCESS => {},
                 .BADF => IoCtlError.InvalidFileDescriptor,
@@ -42,11 +41,6 @@ pub fn ptsname(fd: posix.fd_t, buffer: []u8) ![]const u8 {
         },
         else => {},
     }
-
-    if (buffer.len < name.len)
-        return undefined;
-
-    @memcpy(buffer[0..name.len], name[0..]);
 
     return name;
 }
