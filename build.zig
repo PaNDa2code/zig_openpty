@@ -7,13 +7,6 @@ pub fn build(b: *std.Build) void {
 
     const target_result = target.result;
 
-    switch (target_result.os.tag) {
-        .linux, .macos => {},
-        else => {
-            _ = stderr.write("[!] Unsupported target, only linux or macos\n") catch unreachable;
-        },
-    }
-
     const optimize = b.standardOptimizeOption(.{});
 
     const lib_mod = b.addModule("openpty", .{
