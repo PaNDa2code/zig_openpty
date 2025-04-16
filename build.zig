@@ -1,12 +1,7 @@
 const std = @import("std");
 
 pub fn build(b: *std.Build) void {
-    const stderr = std.io.getStdErr();
-
     const target = b.standardTargetOptions(.{});
-
-    const target_result = target.result;
-
     const optimize = b.standardOptimizeOption(.{});
 
     const lib_mod = b.addModule("openpty", .{
