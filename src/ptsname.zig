@@ -2,6 +2,7 @@ const std = @import("std");
 const builtin = @import("builtin");
 const posix = std.posix;
 const linux = std.os.linux;
+const macos = @import("macos.zig");
 
 const pictl = @import("posix_ioctl.zig");
 
@@ -27,7 +28,7 @@ pub fn ptsname(fd: posix.fd_t, buffer: []u8) ![]const u8 {
             name = try std.fmt.bufPrint(buffer, "/dev/pts/{}", .{ptyno});
         },
         .macos => {
-            const rc = linux.ioctl(fd, pictl.TIOCPTYGNAME, @intFromPtr(&buffer));
+            const rc = macos.ioctl(fd, pictl.TIOCPTYGNAME, @intFromPtr(&buffer));
             const len = std.mem.indexOfScalarPos(u8, buffer, 0, 0).?;
             name = buffer[0..len];
             try switch (posix.errno(rc)) {

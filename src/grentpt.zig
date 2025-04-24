@@ -2,6 +2,7 @@ const std = @import("std");
 const builtin = @import("builtin");
 const posix = std.posix;
 const linux = std.os.linux;
+const macos = @import("macos.zig");
 
 const pictl = @import("posix_ioctl.zig");
 
@@ -16,7 +17,12 @@ pub fn grantpt(fd: posix.fd_t) IoCtlError!void {
         else => @compileError("Unsupported os"),
     };
 
-    const rc = linux.ioctl(fd, arg, @intFromPtr(&ptyno));
+    const rc = switch (builtin.os.tag) {
+        .linux => linux.ioctl(fd, arg, @intFromPtr(&ptyno)),
+        .macos => macos.ioctl(fd, arg, @intFromPtr(&ptyno)),
+        else => @compileError("Unsupported os"),
+    };
+
     switch (posix.errno(rc)) {
         .SUCCESS => {},
         .BADF => return IoCtlError.InvalidFileDescriptor,
