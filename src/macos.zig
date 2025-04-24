@@ -6,7 +6,7 @@ const system = std.posix.system;
 const arch = builtin.cpu.arch;
 
 const syscall3 =
-    if (arch.isX86()) X86_64syscall3 else if (arch.isArm()) Armsyscall3 else @compileError("Not supported arch");
+    if (arch.isX86()) X86_64syscall3 else if (arch.isArm()) Armsyscall3 else if (arch.isAARCH64()) Aarch64syscall3 else @compileError("Not supported arch");
 
 const fd_t = posix.fd_t;
 
@@ -35,5 +35,16 @@ pub fn Armsyscall3(number: usize, arg1: usize, arg2: usize, arg3: usize) usize {
           [arg2] "{r1}" (arg2),
           [arg3] "{r2}" (arg3),
         : "memory"
+    );
+}
+
+pub fn Aarch64syscall3(number: usize, arg1: usize, arg2: usize, arg3: usize) usize {
+    return asm volatile ("svc #0"
+        : [ret] "={x0}" (-> usize),
+        : [number] "{x8}" (number),
+          [arg1] "{x0}" (arg1),
+          [arg2] "{x1}" (arg2),
+          [arg3] "{x2}" (arg3),
+        : "memory", "cc"
     );
 }
