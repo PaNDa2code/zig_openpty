@@ -33,7 +33,7 @@ pub fn X86_64syscall3(number: usize, arg1: usize, arg2: usize, arg3: usize) usiz
 }
 
 pub fn Armsyscall3(number: usize, arg1: usize, arg2: usize, arg3: usize) usize {
-    return asm volatile ("svc #0"
+    return asm volatile ("svc #0x80"
         : [ret] "={r0}" (-> usize),
         : [number] "{r7}" (number),
           [arg1] "{r0}" (arg1),
@@ -44,7 +44,7 @@ pub fn Armsyscall3(number: usize, arg1: usize, arg2: usize, arg3: usize) usize {
 }
 
 pub fn Aarch64syscall3(number: usize, arg1: usize, arg2: usize, arg3: usize) usize {
-    return asm volatile ("svc #0"
+    return asm volatile ("svc #0x80"
         : [ret] "={x0}" (-> usize),
         : [number] "{x8}" (number),
           [arg1] "{x0}" (arg1),
