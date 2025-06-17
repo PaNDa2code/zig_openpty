@@ -6,11 +6,15 @@ const system = std.posix.system;
 const arch = builtin.cpu.arch;
 
 const syscall3 =
-    if (arch.isX86()) X86_64syscall3 else if (arch.isArm()) Armsyscall3 else if (arch.isAARCH64()) Aarch64syscall3 else @compileError("Not supported arch");
+    switch (arch) {
+        .aarch64 => Aarch64syscall3,
+        .x86_64 => X86_64syscall3,
+        .arm => Armsyscall3,
+    };
 
 const fd_t = posix.fd_t;
 
-const ioctl_syscall = 0x36 + 0x2000000;
+const ioctl_syscall = 0x2000036;
 
 pub fn ioctl(fd: fd_t, request: u32, arg: usize) usize {
     return syscall3(ioctl_syscall, @as(usize, @bitCast(@as(isize, fd))), request, arg);
