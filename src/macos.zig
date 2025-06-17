@@ -10,7 +10,7 @@ const syscall3 =
 
 const fd_t = posix.fd_t;
 
-const ioctl_syscall = 0x36;
+const ioctl_syscall = 0x36 + 0x2000000;
 
 pub fn ioctl(fd: fd_t, request: u32, arg: usize) usize {
     return syscall3(ioctl_syscall, @as(usize, @bitCast(@as(isize, fd))), request, arg);
