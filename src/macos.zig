@@ -10,6 +10,7 @@ const syscall3 =
         .aarch64 => Aarch64syscall3,
         .x86_64 => X86_64syscall3,
         .arm => Armsyscall3,
+        else => {},
     };
 
 const fd_t = posix.fd_t;
