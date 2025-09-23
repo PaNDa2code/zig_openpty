@@ -2,7 +2,6 @@ const std = @import("std");
 const builtin = @import("builtin");
 const posix = std.posix;
 const linux = std.os.linux;
-const macos = @import("macos.zig");
 
 const pictl = @import("posix_ioctl.zig");
 

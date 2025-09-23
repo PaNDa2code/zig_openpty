@@ -48,7 +48,6 @@ test "Running forkpty" {
     if (pid == 0) {
         // Child Process - Write to the slave (should be redirected to master)
         _ = try posix.write(1, msg); // Write to stdout
-        std.time.sleep(1_000_000);
     } else {
         // Parent Process - Read from the master side of the PTY
         var buffer: [1024]u8 = undefined;

@@ -3,7 +3,6 @@ const builtin = @import("builtin");
 const posix = std.posix;
 
 const linux = std.os.linux;
-const macos = @import("macos.zig");
 const pi = @import("posix_ioctl.zig");
 
 const grantpt = @import("grentpt.zig").grantpt;
@@ -56,7 +55,7 @@ pub fn openpty(
     if (winsize) |size|
         _ = switch (builtin.os.tag) {
             .linux => linux.ioctl(slave_fd, pi.TIOCSWINSZ, @intFromPtr(size)),
-            .macos => macos.ioctl(slave_fd, pi.TIOCSWINSZ, @intFromPtr(size)),
+            .macos => std.c.ioctl(slave_fd, pi.TIOCSWINSZ, @intFromPtr(size)),
             else => @compileError("Unsupported os"),
         };
 

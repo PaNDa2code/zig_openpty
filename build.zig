@@ -8,14 +8,13 @@ pub fn build(b: *std.Build) void {
         .root_source_file = b.path("src/root.zig"),
         .target = target,
         .optimize = optimize,
-        .link_libc = false,
+        .link_libc = true,
     });
 
     const lib = b.addLibrary(.{
         .linkage = .static,
         .name = "zig_openpty",
         .root_module = lib_mod,
-        .version = std.SemanticVersion.parse("0.1.0") catch null,
     });
 
     b.installArtifact(lib);
