@@ -29,8 +29,6 @@ pub fn ptsname(fd: posix.fd_t, buffer: []u8) ![]const u8 {
         },
         .macos => {
             const rc = std.c.ioctl(fd, pictl.TIOCPTYGNAME, @intFromPtr(&buffer));
-            const len = std.mem.indexOfScalarPos(u8, buffer, 0, 0).?;
-            name = buffer[0..len];
             try switch (posix.errno(rc)) {
                 .SUCCESS => {},
                 .BADF => IoCtlError.InvalidFileDescriptor,
@@ -39,6 +37,7 @@ pub fn ptsname(fd: posix.fd_t, buffer: []u8) ![]const u8 {
                 .NOTTY => IoCtlError.NotTTY,
                 else => IoCtlError.Unexpcted,
             };
+            name = std.mem.span(buffer);
         },
         else => {},
     }
