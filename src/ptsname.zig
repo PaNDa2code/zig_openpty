@@ -14,6 +14,8 @@ pub fn ptsname(fd: posix.fd_t, buffer: []u8) ![]const u8 {
     var ptyno: u32 = 0;
     var name: []const u8 = undefined;
 
+    @memset(buffer, 0);
+
     switch (builtin.os.tag) {
         .linux => {
             const rc = linux.ioctl(fd, pictl.TIOCGPTN, @intFromPtr(&ptyno));
@@ -37,7 +39,8 @@ pub fn ptsname(fd: posix.fd_t, buffer: []u8) ![]const u8 {
                 .NOTTY => IoCtlError.NotTTY,
                 else => IoCtlError.Unexpcted,
             };
-            name = std.mem.span(buffer);
+            const len = std.mem.indexOfScalarPos(u8, buffer, 0, 0).?;
+            name = buffer[0..len];
         },
         else => {},
     }
