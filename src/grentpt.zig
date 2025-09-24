@@ -12,7 +12,7 @@ pub fn grantpt(fd: posix.fd_t) IoCtlError!void {
 
     const rc = switch (builtin.os.tag) {
         .linux => linux.ioctl(fd, pictl.TIOCGPTN, @intFromPtr(&ptyno)),
-        .macos => std.c.ioctl(fd, pictl.TIOCPTYGRANT),
+        .macos => std.c.ioctl(fd, 0x20007454),
         else => @compileError("Unsupported os"),
     };
 

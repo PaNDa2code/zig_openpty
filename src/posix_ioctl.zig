@@ -68,9 +68,9 @@ pub const TIOCSPTLCK = _IOW('T', 0x31, i32);
 pub const TIOCGPTPEER = _IO('T', 0x41);
 pub const TIOCSWINSZ = _IOW('t', 0x67, std.posix.winsize);
 pub const TIOCSCTTY = _IO('T', 0x0E);
-pub const TIOCPTYGRANT = _IO('t', 0x54);
-pub const TIOCPTYUNLK = _IO('t', 0x52);
-pub const TIOCPTYGNAME = _IOC(_IOC_OUT, 't', 0x53, 128);
+pub const TIOCPTYGRANT = 0x20007454;
+pub const TIOCPTYUNLK = 0x20007452;
+pub const TIOCPTYGNAME = 0x40807453;
 
 pub const IoCtlError = error{
     InvalidFileDescriptor,

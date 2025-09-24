@@ -32,8 +32,9 @@ pub fn openpty(
 
     try grantpt(master_fd);
     try unlockpt(master_fd);
-    var buffer: [ptsname_max_size]u8 = undefined;
+    var buffer: [ptsname_max_size:0]u8 = undefined;
     const name_slice = try ptsname(master_fd, &buffer);
+    buffer[name_slice.len] = 0;
 
     const slave_fd: posix.fd_t = switch (builtin.os.tag) {
         .linux => @truncate(
@@ -41,7 +42,7 @@ pub fn openpty(
                 linux.ioctl(master_fd, pi.TIOCGPTPEER, pi.O_RDWR | pi.O_NOCTTY),
             )),
         ),
-        .macos => try posix.open(name_slice, @bitCast(@as(u32, pi.O_RDWR | pi.O_NOCTTY)), 0),
+        .macos => std.c.open(@ptrCast(name_slice.ptr), .{ .ACCMODE = .RDWR, .NOCTTY = true }),
         else => {},
     };
 

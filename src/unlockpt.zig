@@ -12,7 +12,7 @@ pub fn unlockpt(fd: posix.fd_t) IoCtlError!void {
 
     const rc = switch (builtin.os.tag) {
         .linux => linux.ioctl(fd, pictl.TIOCSPTLCK, @intFromPtr(&unlock)),
-        .macos => std.c.ioctl(fd, pictl.TIOCPTYUNLK, @intFromPtr(&unlock)),
+        .macos => std.c.ioctl(fd, pictl.TIOCPTYUNLK),
         else => @compileError("Unsupported os"),
     };
 

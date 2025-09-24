@@ -9,7 +9,7 @@ const IoCtlError = pictl.IoCtlError;
 
 pub const ptsname_max_size = 128;
 
-pub fn ptsname(fd: posix.fd_t, buffer: []u8) ![]const u8 {
+pub fn ptsname(fd: posix.fd_t, buffer: [:0]u8) ![]const u8 {
     var ptyno: u32 = 0;
     var name: []const u8 = undefined;
 
@@ -26,10 +26,10 @@ pub fn ptsname(fd: posix.fd_t, buffer: []u8) ![]const u8 {
                 .NOTTY => IoCtlError.NotTTY,
                 else => IoCtlError.Unexpcted,
             };
-            name = try std.fmt.bufPrint(buffer, "/dev/pts/{}", .{ptyno});
+            name = try std.fmt.bufPrintZ(buffer, "/dev/pts/{}", .{ptyno});
         },
         .macos => {
-            const rc = std.c.ioctl(fd, pictl.TIOCPTYGNAME, @intFromPtr(&buffer));
+            const rc = std.c.ioctl(fd, pictl.TIOCPTYGNAME, @intFromPtr(buffer.ptr));
             try switch (posix.errno(rc)) {
                 .SUCCESS => {},
                 .BADF => IoCtlError.InvalidFileDescriptor,
@@ -38,8 +38,7 @@ pub fn ptsname(fd: posix.fd_t, buffer: []u8) ![]const u8 {
                 .NOTTY => IoCtlError.NotTTY,
                 else => IoCtlError.Unexpcted,
             };
-            const len = std.mem.indexOfScalarPos(u8, buffer, 0, 0).?;
-            name = buffer[0..len];
+            name = std.mem.sliceTo(buffer.ptr, 0);
         },
         else => {},
     }
