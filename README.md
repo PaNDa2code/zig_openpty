@@ -9,8 +9,8 @@ the library is incomplete and hardcoded, don't use it in production.
 
 | Platform | Status | 
 | --- | --- |
-| Linux | ✅ Supported | 
-| macOS | 🚧 Under Development | 
+| Linux | ✅ Supported & tested | 
+| macOS | ✅ Supported & tested | 
 | windows | ❌ Not planned |
 
 
