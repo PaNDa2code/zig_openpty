@@ -2,9 +2,6 @@
 
 simple zig library implementing openpty with no need for linking to libc
 
-
-the library is incomplete and hardcoded, don't use it in production.
-
 ## current state
 
 | Platform | Status | 
@@ -80,4 +77,14 @@ pub fn main() void {
         std.debug.print("Received from child:\n{s}\n", .{buffer[0..read_bytes]});
     }
 }
+```
+
+Note: This module avoids linking against libc by using direct system calls where the platform allows it. On macOS, however, these interfaces are only available via libc, so libc calls are required there (as shown below).
+
+```zig
+_ = switch (builtin.os.tag) {
+    .linux => linux.ioctl(slave_fd, pi.TIOCSWINSZ, @intFromPtr(size)),
+    .macos => std.c.ioctl(slave_fd, pi.TIOCSWINSZ, @intFromPtr(size)),
+    else => @compileError("Unsupported os"),
+};
 ```
