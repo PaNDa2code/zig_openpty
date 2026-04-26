@@ -9,5 +9,5 @@ pub fn posix_openpt(flags: posix.O) posix.OpenError!posix.fd_t {
     return if (os_tag == .linux)
         @bitCast(@as(u32, @truncate(linux.open("/dev/ptmx", flags, 0))))
     else
-        @intCast(std.c.open(linux, flags));
+        @intCast(std.c.open("/dev/ptmx", flags));
 }
