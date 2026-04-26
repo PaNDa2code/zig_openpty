@@ -30,8 +30,8 @@ pub fn openpty(
     winsize: ?*posix.winsize,
 ) OpenPtyError!void {
     const master_fd = try getpt();
-    errdefer switch (os_tag) {
-        .linux => _ = linux.close(master_fd),
+    errdefer _ = switch (os_tag) {
+        .linux => linux.close(master_fd),
         else => std.c.close(master_fd),
     };
 
