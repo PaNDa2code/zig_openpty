@@ -5,6 +5,8 @@ const posix = std.posix;
 const linux = std.os.linux;
 const pi = @import("posix_ioctl.zig");
 
+const os_tag = builtin.os.tag;
+
 const grantpt = @import("grentpt.zig").grantpt;
 const getpt = @import("getpt.zig").getpt;
 const unlockpt = @import("unlockpt.zig").unlockpt;
@@ -28,7 +30,10 @@ pub fn openpty(
     winsize: ?*posix.winsize,
 ) OpenPtyError!void {
     const master_fd = try getpt();
-    errdefer posix.close(master_fd);
+    errdefer switch (os_tag) {
+        .linux => _ = linux.close(master_fd),
+        else => std.c.close(master_fd),
+    };
 
     try grantpt(master_fd);
     try unlockpt(master_fd);

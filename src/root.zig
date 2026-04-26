@@ -8,7 +8,6 @@ pub const ptyname_max_len = @import("ptsname.zig").ptsname_max_size;
 
 test "Opening PTY" {
     const std = @import("std");
-    const posix = std.posix;
     const linux = std.os.linux;
 
     var master_fd: linux.fd_t = undefined;
@@ -20,8 +19,8 @@ test "Opening PTY" {
 
     std.debug.print("pty name: {s}", .{name[0..name_len]});
 
-    defer posix.close(master_fd);
-    defer posix.close(slave_fd);
+    defer _ = linux.close(master_fd);
+    defer _ = linux.close(slave_fd);
 
     try std.testing.expect(name_len > 0);
     try std.testing.expectStringStartsWith(&name, "/dev/");
